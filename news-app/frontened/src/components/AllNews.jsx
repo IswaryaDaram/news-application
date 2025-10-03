@@ -1,6 +1,6 @@
-import { React, useState, useEffect } from 'react';
-import EverythingCard from './EverythingCard';
-import Loader from './Loader';
+import React, { useState, useEffect } from "react";
+import EverythingCard from "./EverythingCard";
+import Loader from "./Loader";
 
 function AllNews() {
   const [data, setData] = useState([]);
@@ -9,69 +9,85 @@ function AllNews() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  function handlePrev() {
-    setPage(page - 1);
-  }
+  const pageSize = 12;
 
-  function handleNext() {
-    setPage(page + 1);
-  }
-
-  let pageSize = 12;
+  const handlePrev = () => setPage(page - 1);
+  const handleNext = () => setPage(page + 1);
 
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-    fetch(`https://news-aggregator-dusky.vercel.app/all-news?page=${page}&pageSize=${pageSize}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Network response was not ok');
+
+    fetch(
+      `https://news-aggregator-dusky.vercel.app/all-news?page=${page}&pageSize=${pageSize}`
+    )
+      .then((response) => {
+        if (response.ok) return response.json();
+        throw new Error("Network response was not ok");
       })
-      .then(myJson => {
-        if (myJson.success) {
-          setTotalResults(myJson.data.totalResults);
-          setData(myJson.data.articles);
+      .then((json) => {
+        if (json.success) {
+          setTotalResults(json.data.totalResults);
+          setData(json.data.articles);
         } else {
-          setError(myJson.message || 'An error occurred');
+          setError(json.message || "An error occurred");
         }
       })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        setError('Failed to fetch news. Please try again later.');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .catch((err) => setError("Failed to fetch news."))
+      .finally(() => setIsLoading(false));
   }, [page]);
 
   return (
-    <>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+    <div className="min-h-screen bg-gray-100 pt-28 px-4 sm:px-6 lg:px-8">
+      {error && <div className="text-red-500 text-center mb-6">{error}</div>}
 
-      <div className='my-10 cards grid lg:place-content-center md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xs:grid-cols-1 xs:gap-4 md:gap-10 lg:gap-14 md:px-16 xs:p-3 '>
-        {!isLoading ? data.map((element, index) => (
-          <EverythingCard
-            title={element.title}
-            description={element.description}
-            imgUrl={element.urlToImage}
-            publishedAt={element.publishedAt}
-            url={element.url}
-            author={element.author}
-            source={element.source.name}
-            key={index}
-          />
-        )) : <Loader />}
-      </div>
-      {!isLoading && data.length > 0 && (
-        <div className="pagination flex justify-center gap-14 my-10 items-center">
-          <button disabled={page <= 1} className='pagination-btn text-center' onClick={handlePrev}>&larr; Prev</button>
-          <p className='font-semibold opacity-80'>{page} of {Math.ceil(totalResults / pageSize)}</p>
-          <button className='pagination-btn text-center' disabled={page >= Math.ceil(totalResults / pageSize)} onClick={handleNext}>Next &rarr;</button>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="grid gap-8 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 max-w-7xl mx-auto">
+          {data.length > 0 ? (
+            data.map((element, index) => (
+              <EverythingCard
+                key={index}
+                title={element.title}
+                description={element.description}
+                imgUrl={element.urlToImage}
+                publishedAt={element.publishedAt}
+                url={element.url}
+                author={element.author}
+                source={element.source.name}
+              />
+            ))
+          ) : (
+            <p className="text-center text-gray-700 col-span-full">
+              No news articles available.
+            </p>
+          )}
         </div>
       )}
-    </>
+
+      {!isLoading && data.length > 0 && (
+        <div className="pagination flex justify-center gap-10 my-12 items-center">
+          <button
+            disabled={page <= 1}
+            onClick={handlePrev}
+            className="px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400"
+          >
+            &larr; Prev
+          </button>
+          <p className="font-semibold opacity-80">
+            {page} of {Math.ceil(totalResults / pageSize)}
+          </p>
+          <button
+            disabled={page >= Math.ceil(totalResults / pageSize)}
+            onClick={handleNext}
+            className="px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
