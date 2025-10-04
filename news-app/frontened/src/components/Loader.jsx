@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
+
 function Loader() {
   return (
-    <div className='loader-container w-full absolute flex justify-center top-0 left-0'>
-        {/* <img className='loader w-1/2' src={loader} alt="loader" /> */}
-        <span className="loader"></span>
+    <div className="w-full flex justify-center py-20">
+      <span className="loader w-12 h-12 border-4 border-redHighlight border-t-transparent rounded-full animate-spin"></span>
     </div>
-  )
+  );
 }
 
-export default Loader
+export default Loader;

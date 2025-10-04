@@ -2,25 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Themes */
-.light-theme {
-  --background: #f8fafc;
-  --txt: #000;
-  --heading: #2dd9fe;
-  --btn-background: #5f99be;
-}
-
-.dark-theme {
-  --background: #1e293b;
-  --txt: #fff;
-  --heading: #4666ff;
-  --btn-background: #5f99be;
-}
-
+/* Body background and font */
 body {
-  background: var(--background);
-  color: var(--txt);
-  min-height: 100vh;
-  scroll-behavior: smooth;
-  font-family: system-ui, sans-serif;
+  @apply bg-gray-100 text-gray-900 font-sans min-h-screen;
+}
+
+/* Header */
+header {
+  @apply fixed w-full top-0 z-50 bg-white shadow-md;
+}
+
+/* Logo */
+.logo-newspaper {
+  @apply text-3xl font-bold tracking-wide text-gray-900;
+}
+
+/* Dropdowns */
+header ul ul {
+  @apply absolute bg-white dark:bg-gray-800 shadow-lg rounded mt-2 overflow-auto max-h-64 z-50;
+}
+
+header ul ul li {
+  @apply px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer;
+}
+
+/* Buttons */
+button {
+  @apply transition-colors duration-200;
+}
+
+/* Cards */
+.cards > div {
+  @apply bg-white dark:bg-gray-800 border rounded-lg shadow-md p-4 flex flex-col transition-transform duration-200 hover:-translate-y-1;
+}
+
+/* Card image fallback */
+.cards img {
+  @apply w-full h-48 object-cover rounded;
+}
+
+/* Dark theme overrides */
+body.dark-theme {
+  @apply bg-gray-900 text-gray-100;
+}
+
+body.dark-theme header {
+  @apply bg-gray-800 text-white shadow-lg;
+}
+
+/* Pagination buttons */
+.pagination button {
+  @apply px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded disabled:opacity-50 hover:bg-gray-400 dark:hover:bg-gray-600;
 }

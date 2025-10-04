@@ -51,11 +51,11 @@ function AllNews() {
                 key={index}
                 title={element.title}
                 description={element.description}
-                imgUrl={element.urlToImage}
+                urlToImage={element.urlToImage} // <-- corrected prop
                 publishedAt={element.publishedAt}
                 url={element.url}
                 author={element.author}
-                source={element.source.name}
+                source={element.source} // <-- pass entire source object
               />
             ))
           ) : (

@@ -11,7 +11,8 @@ function CountryNews() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const pageSize = 6;
+  const pageSize = 12;
+  const API_KEY = "8b89f26f798b43dbbccee3e1abd8e73f"; // <-- Replace with your API key
 
   // Reset page when country changes
   useEffect(() => {
@@ -26,16 +27,23 @@ function CountryNews() {
       setError(null);
 
       try {
-        const url = `https://news-aggregator-dusky.vercel.app/country/${iso}?page=${page}&pageSize=${pageSize}&sortBy=publishedAt`;
-        const response = await fetch(url);
+        const countryCode = iso.toLowerCase(); // NewsAPI expects lowercase
+
+        const response = await fetch(
+          `https://newsapi.org/v2/top-headlines?country=${countryCode}&page=${page}&pageSize=${pageSize}&apiKey=${API_KEY}`
+        );
+
         if (!response.ok) throw new Error("Network response was not ok");
 
         const json = await response.json();
-        if (json.success) {
-          setData(json.data.articles);
-          setTotalResults(json.data.totalResults);
+
+        if (json.status === "ok" && json.articles?.length > 0) {
+          setData(json.articles);
+          setTotalResults(json.totalResults);
         } else {
-          setError(json.message || "An error occurred");
+          setData([]);
+          setTotalResults(0);
+          setError("No articles found for this country.");
         }
       } catch (err) {
         console.error(err);
@@ -48,8 +56,9 @@ function CountryNews() {
     fetchNews();
   }, [iso, page]);
 
-  const handlePrev = () => setPage(page - 1);
-  const handleNext = () => setPage(page + 1);
+  const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () =>
+    setPage((prev) => Math.min(prev + 1, Math.ceil(totalResults / pageSize)));
 
   return (
     <div className="min-h-screen bg-gray-100 pt-28 px-4 sm:px-6 lg:px-8">
@@ -64,38 +73,40 @@ function CountryNews() {
               key={index}
               title={article.title}
               description={article.description}
-              imgUrl={article.urlToImage}
+              urlToImage={article.urlToImage}
               publishedAt={article.publishedAt}
               url={article.url}
               author={article.author}
-              source={article.source.name}
+              source={article.source}
             />
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-700">
-          No articles found for this country.
-        </p>
+        !isLoading && (
+          <p className="text-center text-gray-700">
+            No articles found for this country.
+          </p>
+        )
       )}
 
       {!isLoading && data.length > 0 && (
-        <div className="pagination flex justify-center gap-14 my-10 items-center">
+        <div className="pagination flex justify-center gap-10 my-12 items-center">
           <button
             disabled={page <= 1}
-            className="pagination-btn px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400 transition"
             onClick={handlePrev}
+            className="px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400"
           >
-            Prev
+            &larr; Prev
           </button>
           <p className="font-semibold opacity-80">
             Page {page} of {Math.ceil(totalResults / pageSize)}
           </p>
           <button
             disabled={page >= Math.ceil(totalResults / pageSize)}
-            className="pagination-btn px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400 transition"
             onClick={handleNext}
+            className="px-4 py-2 rounded bg-gray-300 disabled:opacity-50 hover:bg-gray-400"
           >
-            Next
+            Next &rarr;
           </button>
         </div>
       )}

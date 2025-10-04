@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
 function Footer() {
   return (
-    <footer className='footer fixed w-full left-0 bottom-0 flex justify-center items-center'>
-        Copyright&copy; 2023
+    <footer className="w-full py-4 bg-[var(--header-bg)] text-center text-gray-600">
+      &copy; 2025 News Aggregator
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

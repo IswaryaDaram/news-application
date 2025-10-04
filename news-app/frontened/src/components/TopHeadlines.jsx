@@ -21,11 +21,11 @@ function TopHeadlines() {
     setError(null);
 
     fetch(
-      `https://news-aggregator-dusky.vercel.app/top-headlines?language=en&category=${category}&page=${page}&pageSize=${pageSize}`
+      `http://localhost:3000/top-headlines?category=${category}&page=${page}&pageSize=${pageSize}`
     )
       .then((res) => (res.ok ? res.json() : Promise.reject("Network error")))
       .then((json) => {
-        if (json.success) {
+        if (json.success && json.data.articles) {
           setData(json.data.articles);
           setTotalResults(json.data.totalResults);
         } else {
@@ -39,6 +39,7 @@ function TopHeadlines() {
   return (
     <>
       {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+
       {isLoading ? (
         <Loader />
       ) : (
